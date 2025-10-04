@@ -6,69 +6,9 @@
     <meta name="viewport" content="height=device-height, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Welcome mychat</title>
-    <link
-  type="text/css"
-  href="https://lab.morfans.cn/LiteWebChat_Frame/dist/css/litewebchat.min.css"
-  rel="stylesheet"
-/>
-<link
-  type="text/css"
-  href="https://cdn.jsdelivr.net/gh/MorFansLab/LiteWebChat_Frame/dist/css/litewebchat_input.min.css"
-  rel="stylesheet"
-/>
-    <style>
-        /* 全局 */
-
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .main {
-            margin-left: 150px;
-            padding: 8px;
-        }
-
-        .lite-chatmaster {
-            width: 70%;
-            height: 500px;
-            border: 1px solid black;
-        }
-
-        ::-webkit-scrollbar {
-            /* 滚动条整体样式 */
-            width: 3px;
-            /* 高宽分别对应横竖滚动条的尺寸 */
-            height: 1px;
-        }
-
-        #login-form {
-            width: 200px;
-            height: 200px;
-            margin: 8px;
-        }
-
-        #login-form input {
-            margin-bottom: 8px;
-        }
-
-        #online-user-view {
-            width: 70%;
-            height: 200px;
-            border: 1px solid black;
-        }
-
-        #online-user-view div {
-            width: 50px;
-            height: 16px;
-            border: 1px solid green;
-            margin: 8px 8px;
-        }
-
-    </style>
+    <link type="text/css" href="https://lab.morfans.cn/LiteWebChat_Frame/dist/css/litewebchat.min.css" rel="stylesheet"/>
+    <link type="text/css" href="https://cdn.jsdelivr.net/gh/MorFansLab/LiteWebChat_Frame/dist/css/litewebchat_input.min.css" rel="stylesheet"/>
+    <link type="text/css" href="/static/index.css?6" rel="stylesheet"/>
 </head>
 
 <body>
@@ -82,7 +22,7 @@
                 </form>
             </div>
         </div>
-        <div id="online-user-view">     
+        <div id="online-user-view" style="display: none;">     
         </div>
         <!-- 主容器 -->
         <div class="lite-chatmaster" style="display: none;">
@@ -192,7 +132,7 @@
         //     }
         // });
     </script>
-    <script src="/static/index.js?1"></script>
+    <script src="/static/index.js?3"></script>
 </body>
 
 </html>

@@ -30,6 +30,7 @@ function init() {
             }
 
             document.querySelector("#login-view").style.display = "none";
+            document.querySelector("#online-user-view").style.display = "";
 
             initWebSocket();
 
