@@ -19,6 +19,7 @@ func Router() *gin.Engine {
 		user.POST("/new", service.NewUser)
 		user.DELETE("/delete", middleware.JWY(), service.DeleteUser)
 		user.POST("/update", middleware.JWY(), service.UpdateUser)
+		user.GET("/test_user", service.GetTestUser)
 	}
 
 	router.GET("/send_msg", middleware.JWY(), service.SendUserMsg)

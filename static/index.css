@@ -31,6 +31,13 @@ body {
     margin-top: 8px;
 }
 
+/* .lite-chatinput {
+  width: 300px;
+  height: 150px;
+  position: absolute;
+  bottom: 0px;
+} */
+
 ::-webkit-scrollbar {
     /* 滚动条整体样式 */
     width: 3px;

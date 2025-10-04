@@ -162,3 +162,22 @@ func SendUserMsg(ctx *gin.Context) {
 func InitWss(ctx *gin.Context) {
 
 }
+
+func GetTestUser(ctx *gin.Context) {
+	userInfo := dao.GetTestUserInfo()
+	for _, v := range userInfo {
+		if !IsUserOnline(v[0]) {
+			ctx.JSON(200, gin.H{
+				"code":     0,
+				"name":     v[0],
+				"password": v[1],
+			})
+			return
+		}
+	}
+
+	ctx.JSON(200, gin.H{
+		"code": -1,
+		"msg":  "测试用户都被占用了",
+	})
+}

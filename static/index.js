@@ -59,9 +59,40 @@ function init() {
 
         document.querySelector(".lite-chatmaster").style.display = "";
     };
+
+    initTestUser();
+
 }
 
 init();
+
+async function initTestUser() {
+    const url = "/v1/user/test_user";
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP 错误! 状态码: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result["code"] != 0) {
+            alert("登录失败：", result["msg"])
+            return;
+        }
+        
+        var name = result["name"];
+        var password = result["password"];
+
+        document.querySelector("#login-name").value = name;
+        document.querySelector("#login-password").value = password;
+
+    } catch (error) {
+        let msg = 'Fetch 错误:' + error;
+        alert("登录失败", msg)
+    }
+}
 
 function initWebSocket() {
     const WS_URL = "ws://" + window.location.host + "/send_msg?token=" + window.login_data.token + "&userId=" + window.login_data.userId;

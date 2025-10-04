@@ -2,6 +2,8 @@ package dao
 
 import (
 	"errors"
+	"fmt"
+	"math/rand"
 	"mychat/common"
 	"mychat/global"
 	"mychat/models"
@@ -13,8 +15,8 @@ import (
 
 func GetUserList() ([]*models.User, error) {
 	var list []*models.User
-	if tx := global.DB.Find(&list); tx.RowsAffected == 0 {
-		return nil, errors.New("获取用户列表失败")
+	if err := global.DB.Find(&list).Error; err != nil {
+		return nil, fmt.Errorf("获取用户列表失败 %s", err)
 	}
 
 	return list, nil
@@ -199,4 +201,45 @@ func AddFriendByName(userId uint, targetName string) (int, error) {
 		return -1, errors.New("该用户不存在")
 	}
 	return AddFriend(userId, user.Id)
+}
+
+func createUser(name, password string) {
+	user := models.User{}
+	user.Name = name
+	salt := fmt.Sprintf("%d", rand.Int31())
+	user.Password = common.SaltPassWord(password, salt)
+	user.Salt = salt
+	t := time.Now()
+	user.CreateAt = t
+	user.UpdatedAt = t
+	user.LoginTime = &t
+	user.LoginOutTime = &t
+	user.HeartBeatTime = &t
+	CreateUser(user)
+}
+
+func GetTestUserInfo() [][]string {
+	return [][]string{
+		{"zsan", "lll"},
+		{"lisi", "lll"},
+		{"wwu", "lll"},
+		{"xwang", "lll"},
+		{"wzhao", "lll"},
+	}
+}
+
+func InitTestUser() {
+	users, err := GetUserList()
+	if err != nil {
+		panic(fmt.Sprintf("failed to get user list, %s", err))
+	}
+
+	if len(users) > 0 {
+		return
+	}
+
+	userInfo := GetTestUserInfo()
+	for _, v := range userInfo {
+		createUser(v[0], v[1])
+	}
 }

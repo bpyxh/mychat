@@ -1,11 +1,9 @@
 package main
 
 import (
+	"mychat/dao"
 	"mychat/initialize"
 	"mychat/router"
-	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -20,14 +18,8 @@ func main() {
 	port := 3306
 	initialize.InitDB(user, password, host, dbName, port)
 
+	dao.InitTestUser()
+
 	router := router.Router()
 	router.Run(":8800")
-}
-
-func Pong(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"name":   "xxx",
-		"age":    18,
-		"school": "nonono",
-	})
 }

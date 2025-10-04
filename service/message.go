@@ -237,6 +237,16 @@ func getOnlineUserCore() []map[string]interface{} {
 	return userInfo
 }
 
+func IsUserOnline(name string) bool {
+	for _, v := range onlineUser {
+		if v["name"] == name {
+			return true
+		}
+	}
+
+	return false
+}
+
 // TODO: 跟定时器那个合并一下
 func getOnlineUser(userId int64) {
 	fmt.Println("getonlineuser", userId)
