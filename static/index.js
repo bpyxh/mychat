@@ -49,6 +49,11 @@ function init() {
         if (!userId) {
             return;
         }
+
+        window.other_user = {
+            "name": name,
+            "user_id": Number(userId),
+        }
         console.log(name, userId);
 
         document.querySelector(".lite-chatmaster").style.display = "";
@@ -58,7 +63,7 @@ function init() {
 init();
 
 function initWebSocket() {
-    const WS_URL = 'ws://localhost:8800/send_msg?token=' + window.login_data.token + "&userId=" + window.login_data.userId;
+    const WS_URL = "ws://" + window.location.host + "/send_msg?token=" + window.login_data.token + "&userId=" + window.login_data.userId;
     var socket = window.mysocket;
 
     function connectWebSocket() {
@@ -188,20 +193,18 @@ document.querySelector('.send').onclick = function () {
     socket.send(JSON.stringify({
         cmd: 1,
         from_id: window.login_data["userId"],
-        to_id: 2,
+        to_id: Number(window.other_user.user_id),
         text: text,
     }));
-
-    return;
-
 
     htmls.push({
         messageType: 'raw',
         headIcon: '/static/images/B.jpg',
-        name: 'SuperPaxxs',
+        name: window.login_data.name,
         position: 'right',
         html: text
     })
+
     document.querySelector('.chatinput').innerHTML = '';
     beforeRenderingHTML(htmls, '.lite-chatbox');
 };
