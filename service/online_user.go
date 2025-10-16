@@ -3,11 +3,12 @@ package service
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 var onlineUser map[int64]map[string]interface{} = make(map[int64]map[string]interface{})
-var onlineUserUpdated = true
+var onlineUserUpdated atomic.Bool
 var mutex sync.RWMutex
 
 func broadOnlineUser() {
@@ -15,7 +16,8 @@ func broadOnlineUser() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		if !onlineUserUpdated {
+		updated := onlineUserUpdated.Load()
+		if !updated {
 			continue
 		}
 		// data, _ := json.Marshal(onlineUser)
@@ -27,13 +29,12 @@ func broadOnlineUser() {
 
 		BroadMsg(resp)
 
-		onlineUserUpdated = false
-		// clientMap[userId] = node
-		// rwLocker.Unlock()
+		onlineUserUpdated.Store(false)
 	}
 }
 
 func init() {
+	onlineUserUpdated.Store(false)
 	go broadOnlineUser()
 }
 
@@ -49,7 +50,7 @@ func AddOnlineUser(name string, userId int64) {
 			"user_id": userId,
 		}
 
-		onlineUserUpdated = true
+		onlineUserUpdated.Store(true)
 	}
 }
 
@@ -59,7 +60,7 @@ func RemoveOnlineUser(userId int64) {
 
 	if _, ok := onlineUser[userId]; ok {
 		delete(onlineUser, userId)
-		onlineUserUpdated = true
+		onlineUserUpdated.Store(true)
 	}
 }
 
