@@ -22,7 +22,7 @@ func Router() *gin.Engine {
 		user.GET("/test_user", service.GetTestUser)
 	}
 
-	router.GET("/send_msg", middleware.JWY(), service.SendUserMsg)
+	router.GET("/ws", middleware.JWY(), service.Ws)
 
 	relation := v1.Group("relation").Use(middleware.JWY())
 	{

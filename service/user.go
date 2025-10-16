@@ -155,10 +155,6 @@ func DeleteUser(ctx *gin.Context) {
 
 }
 
-func SendUserMsg(ctx *gin.Context) {
-	chat(ctx.Writer, ctx.Request)
-}
-
 func InitWss(ctx *gin.Context) {
 
 }

@@ -22,7 +22,10 @@
                 </form>
             </div>
         </div>
-        <div id="online-user-view" style="display: none;">     
+        <div id="online-user-view" style="display: none;">
+            <div>
+                当前在线用户：
+            </div>
         </div>
         <!-- 主容器 -->
         <div class="lite-chatmaster" style="display: none;">
@@ -80,22 +83,8 @@
         const htmls = [
         {
             messageType: 'tipsDanger',
-            html: '从我做过的类聊天需求来看，聊天消息要么是纯文本，要么是富文本。text 类型是纯文本, raw 类型是富文本。'
-        }, 
-        {
-            messageType: 'text',
-            headIcon: '/static/images/A.jpg',
-            name: 'others',
-            position: 'left',
-            html: '你在干嘛？'
-        },
-        {
-            messageType: 'text',
-            headIcon: '/static/images/B.jpg',
-            name: 'me',
-            position: 'right',
-            html: '啥也没干'
-        },
+            html: '欢迎使用'
+        }
         ];
         beforeRenderingHTML(htmls, '.lite-chatbox');
     </script>

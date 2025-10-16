@@ -78,7 +78,7 @@ async function initTestUser() {
 
         const result = await response.json();
         if (result["code"] != 0) {
-            alert("登录失败：", result["msg"])
+            alert("获取测试账号失败：" + result["msg"])
             return;
         }
         
@@ -90,12 +90,12 @@ async function initTestUser() {
 
     } catch (error) {
         let msg = 'Fetch 错误:' + error;
-        alert("登录失败", msg)
+        alert(msg)
     }
 }
 
 function initWebSocket() {
-    const WS_URL = "ws://" + window.location.host + "/send_msg?token=" + window.login_data.token + "&userId=" + window.login_data.userId;
+    const WS_URL = "ws://" + window.location.host + "/ws?token=" + window.login_data.token + "&userId=" + window.login_data.userId;
     var socket = window.mysocket;
 
     function connectWebSocket() {

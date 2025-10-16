@@ -62,8 +62,8 @@ body {
 }
 
 #online-user-view div {
-    width: 50px;
+    /* width: 50px; */
     height: 16px;
-    border: 1px solid green;
+    /* border: 1px solid green; */
     margin: 8px 8px;
 }

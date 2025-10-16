@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"mychat/dao"
 	"mychat/initialize"
 	"mychat/router"
@@ -19,6 +20,8 @@ func main() {
 	initialize.InitDB(user, password, host, dbName, port)
 
 	dao.InitTestUser()
+
+	fmt.Println("server running...................................................")
 
 	router := router.Router()
 	router.Run(":8800")
