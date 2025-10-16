@@ -182,9 +182,11 @@ function processServerMsg(data) {
 }
 
 function processOnlineUserMsg(msg) {
-    var itemTmpl = "<div><span user-id='{{userId}}'>{{userName}}</span></div>";
+    var itemTmpl = "<div class='user-info'><span tooltip-right='点击与他聊天' user-id='{{userId}}'>{{userName}}</span></div>";
     var node = document.querySelector("#online-user-view");
     node.innerHTML = "";
+    node.insertAdjacentHTML("beforeend", "<div class='tip-text'>当前在线用户：</div>");
+
     var myId = window.login_data.userId;
     for (let i = 0; i < msg["user_info"].length; i++) {
         var userName = msg["user_info"][i].name;

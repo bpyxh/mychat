@@ -56,10 +56,13 @@ func (h *Hub) run() {
 			h.clients[uid] = client
 		case client := <-h.unregister:
 			uid := client.UserId()
+			zap.S().Infof("%d ungisger", uid)
 			if _, ok := h.clients[uid]; ok {
 				delete(h.clients, uid)
 				close(client.send)
 			}
+
+			RemoveOnlineUser(uid)
 		case msg := <-h.broadcast:
 			toIdFloat, ok := msg["to_id"].(float64)
 			if !ok {
@@ -189,6 +192,7 @@ func (c *Client) processMsg(msg map[string]interface{}) {
 	}
 }
 
+// TODO: 看一下客户端网页刷新后，ws是哪个代码路径断开的链接的。
 func (c *Client) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {

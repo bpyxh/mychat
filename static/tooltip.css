@@ -1,0 +1,153 @@
+/*
+ * tooltip
+ */
+
+[tooltip-top],
+[tooltip-right],
+[tooltip-bottom],
+[tooltip-left] {
+  position: relative;
+}
+[tooltip-top]::before,
+[tooltip-top]::after,
+[tooltip-right]::before,
+[tooltip-right]::after,
+[tooltip-bottom]::before,
+[tooltip-bottom]::after,
+[tooltip-left]::before,
+[tooltip-left]::after {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  transition: all 0.2s ease 0.05s;
+  z-index: 10;
+}
+[tooltip-top]:hover::before,
+[tooltip-top]:hover::after,
+[tooltip-right]:hover::before,
+[tooltip-right]:hover::after,
+[tooltip-bottom]:hover::before,
+[tooltip-bottom]:hover::after,
+[tooltip-left]:hover::before,
+[tooltip-left]:hover::after {
+  visibility: visible;
+  opacity: 1;
+}
+[tooltip-top]::before,
+[tooltip-right]::before,
+[tooltip-bottom]::before,
+[tooltip-left]::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+}
+[tooltip-top]::after,
+[tooltip-right]::after,
+[tooltip-bottom]::after,
+[tooltip-left]::after {
+  position: absolute;
+  background: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  color: white;
+  padding: 5px 10px;
+  white-space: nowrap;
+  border-radius: 4px;
+  box-shadow: 0px 0px 3px #000000;
+}
+
+[tooltip-top]::before {
+  border-top-color: #333333;
+  top: 0px;
+}
+
+[tooltip-right]::before {
+  border-right-color: #333333;
+  right: 0;
+}
+
+[tooltip-bottom]::before {
+  border-bottom-color: #333333;
+  bottom: 0;
+}
+
+[tooltip-left]::before {
+  border-left-color: #333333;
+  left: 0;
+}
+
+[tooltip-top]::before,
+[tooltip-bottom]::before {
+  left: calc(50% - 6px);
+}
+
+[tooltip-top]::after,
+[tooltip-bottom]::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+[tooltip-top]:hover::before {
+  transform: translateX(0%) translateY(-10px);
+}
+[tooltip-top]:hover::after {
+  transform: translateX(-50%) translateY(-10px);
+}
+
+[tooltip-top]::after {
+  content: attr(tooltip-top);
+  bottom: 100%;
+  margin-bottom: -1px;
+}
+
+[tooltip-bottom]:hover::before {
+  transform: translateX(0%) translateY(10px);
+}
+[tooltip-bottom]:hover::after {
+  transform: translateX(-50%) translateY(10px);
+}
+
+[tooltip-bottom]::after {
+  content: attr(tooltip-bottom);
+  top: 100%;
+  margin-top: -1px;
+}
+
+[tooltip-right]::before,
+[tooltip-left]::before {
+  top: calc(50% - 6px);
+}
+
+[tooltip-right]::after,
+[tooltip-left]::after {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+[tooltip-right]:hover::before {
+  transform: translateX(10px) translateY(0%);
+}
+[tooltip-right]:hover::after {
+  transform: translateX(10px) translateY(-50%);
+}
+
+[tooltip-right]::after {
+  content: attr(tooltip-right);
+  left: 100%;
+  margin-left: -1px;
+}
+
+[tooltip-left]:hover::before {
+  transform: translateX(-10px) translateY(0%);
+}
+[tooltip-left]:hover::after {
+  transform: translateX(-10px) translateY(-50%);
+}
+
+[tooltip-left]::after {
+  content: attr(tooltip-left);
+  right: 100%;
+  margin-right: -1px;
+}
