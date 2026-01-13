@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
-	"mychat/common"
+	"mychat/internal/common"
 	"os"
 	"strings"
 	"time"

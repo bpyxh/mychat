@@ -3,7 +3,7 @@ package initialize
 import (
 	"fmt"
 	"log"
-	"mychat/global"
+	"mychat/internal/global"
 	"os"
 	"time"
 

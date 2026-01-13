@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"mychat/dao"
-	"mychat/initialize"
-	"mychat/router"
+	"mychat/internal/dao"
+	"mychat/internal/initialize"
+	"mychat/internal/router"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package router
 
 import (
-	"mychat/middleware"
-	"mychat/service"
+	"mychat/internal/middleware"
+	"mychat/internal/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"mychat/global"
+	"mychat/internal/global"
 )
 
 type Community struct {

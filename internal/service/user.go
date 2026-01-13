@@ -3,10 +3,10 @@ package service
 import (
 	"fmt"
 	"math/rand"
-	"mychat/common"
-	"mychat/dao"
-	"mychat/middleware"
-	"mychat/models"
+	"mychat/internal/common"
+	"mychat/internal/dao"
+	"mychat/internal/middleware"
+	"mychat/internal/models"
 	"net/http"
 	"time"
 

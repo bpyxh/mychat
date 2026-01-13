@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"mychat/common"
-	"mychat/global"
-	"mychat/models"
+	"mychat/internal/common"
+	"mychat/internal/global"
+	"mychat/internal/models"
 	"strconv"
 	"time"
 

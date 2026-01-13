@@ -1,8 +1,8 @@
 package service
 
 import (
-	"mychat/common"
-	"mychat/dao"
+	"mychat/internal/common"
+	"mychat/internal/dao"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
