@@ -1,7 +1,9 @@
-package models
+package model
+
+import "gorm.io/gorm"
 
 type Message struct {
-	Model
+	gorm.Model
 	FormId   int64 `json:"fromId"`
 	TargetId int64 `json:"targetId"`
 	Type     int
