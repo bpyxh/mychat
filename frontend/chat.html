@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-2: #ffffff;
+      --card: #ffffffcc;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #4f8df7;
+      --primary-2: #3b82f6;
+      --ring: #93c5fd55;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, var(--bg) 40%),
+                  radial-gradient(1200px 600px at 90% 90%, #fce7f3 0%, var(--bg-2) 35%);
+      min-height: 100svh;
+      display: grid;
+      place-items: stretch;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+      padding: 16px;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+    @media (max-width: 780px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        overflow: auto;
+        height: auto;
+      }
+      .chat {
+        height: 80vh;
+      }
+      .sidebar {
+        height: auto;
+      }
+    }
+    .chat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px #00000015, inset 0 1px 0 #ffffff90;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      height: 100%;
+      overflow: hidden;
+    }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffffee;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+    .chat-title { font-weight: 700; }
+    .chat-status { font-size: 12px; color: var(--muted); }
+    .messages {
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      align-items: start;
+      overflow: auto;
+      background: transparent;
+    }
+    .msg {
+      max-width: 70%;
+      padding: 10px 12px;
+      line-height: 1.5;
+      align-self: start;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffffee;
+      color: var(--text);
+      box-shadow: inset 0 1px 0 #ffffff90;
+    }
+    .msg.me {
+      justify-self: end;
+      background: #e8f0ff;
+      border-color: #cfe1ff;
+    }
+    .msg-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .chat-input {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      background: #ffffffee;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+    #msgInput {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffffee;
+      outline: none;
+    }
+    #sendBtn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, var(--primary), var(--primary-2));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .sidebar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px #00000015, inset 0 1px 0 #ffffff90;
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #22d3ee);
+      box-shadow: 0 0 20px #22d3ee66;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 28px;
+      margin: 0 auto 8px;
+    }
+    .user-name {
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .user-username {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .section-title { font-size: 13px; color: var(--muted); }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #ffffffee;
+      padding: 12px;
+    }
+    .row { display: grid; grid-template-columns: 120px 1fr; gap: 8px; font-size: 14px; }
+    .label { color: var(--muted); }
+    .value { color: var(--text); }
+    @media (max-width: 780px) {
+      .app { grid-template-columns: 1fr; }
+    }
+  </style>
+  </head>
+<body>
+  <div class="app">
+    <section class="chat" aria-label="聊天区域">
+      <div class="chat-header">
+        <div class="chat-title">聊天</div>
+        <div class="chat-status" id="chatStatus">未连接</div>
+      </div>
+      <div class="messages" id="messages"></div>
+      <div class="chat-input">
+        <input id="msgInput" type="text" placeholder="输入消息内容…">
+        <button id="sendBtn">发送</button>
+      </div>
+    </section>
+    <aside class="sidebar" aria-label="用户信息">
+      <div class="avatar" id="avatar"></div>
+      <div class="user-name" id="userName"></div>
+      <div class="user-username" id="userUsername"></div>
+      <div class="section-title">账户信息</div>
+      <div class="card">
+        <div class="row"><div class="label">用户名</div><div class="value" id="vUsername"></div></div>
+        <div class="row"><div class="label">昵称</div><div class="value" id="vName"></div></div>
+      </div>
+    </aside>
+  </div>
+  <script>
+    function getInitial(name, username) {
+      const s = (name || username || '').trim();
+      return s ? s[0].toUpperCase() : 'U';
+    }
+    function initUser() {
+      const userStr = localStorage.getItem('currentUser');
+      if (!userStr) {
+        location.href = 'index.html#login';
+        return;
+      }
+      let user = null;
+      try { user = JSON.parse(userStr); } catch { user = null; }
+      if (!user) {
+        location.href = 'index.html#login';
+        return;
+      }
+      const name = user.name || '';
+      const username = user.username || '';
+      document.getElementById('avatar').textContent = getInitial(name, username);
+      document.getElementById('userName').textContent = name || username || '用户';
+      document.getElementById('userUsername').textContent = username ? '@' + username : '';
+      document.getElementById('vUsername').textContent = username || '';
+      document.getElementById('vName').textContent = name || '';
+      return user;
+    }
+    const user = initUser();
+    const messagesEl = document.getElementById('messages');
+    const statusEl = document.getElementById('chatStatus');
+    const inputEl = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+    let ws = null;
+    let myId = user && (user.id || user.ID);
+    function renderMessage({ text, me, from }) {
+      const item = document.createElement('div');
+      item.className = 'msg' + (me ? ' me' : '');
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.textContent = me ? '我' : (from || '对方');
+      const content = document.createElement('div');
+      content.textContent = text;
+      item.appendChild(meta);
+      item.appendChild(content);
+      messagesEl.appendChild(item);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+    function connectWS() {
+      if (!myId) return;
+      try {
+        ws = new WebSocket('ws://localhost:8080/api/ws?userId=' + encodeURIComponent(myId));
+        ws.onopen = () => { statusEl.textContent = '已连接'; };
+        ws.onclose = () => { statusEl.textContent = '未连接'; };
+        ws.onerror = () => { statusEl.textContent = '连接错误'; };
+        ws.onmessage = (evt) => {
+          let msg = null;
+          try { msg = JSON.parse(evt.data); } catch { msg = null; }
+          if (!msg) return;
+          if (msg.content) {
+            renderMessage({ text: msg.content, me: false, from: msg.from_name || '对方' });
+          }
+        };
+      } catch (_) {
+        statusEl.textContent = '连接错误';
+      }
+    }
+    function sendMessage() {
+      const text = (inputEl.value || '').trim();
+      if (!text) return;
+      inputEl.value = '';
+      renderMessage({ text, me: true, from: '我' });
+      const payload = JSON.stringify({
+        cmd: 1,
+        to_id: -1,
+        content: text,
+        from_id: myId || 0,
+        ts: Date.now()
+      });
+      try {
+        if (ws && ws.readyState === 1) {
+          ws.send(payload);
+        }
+      } catch (_) {}
+    }
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+    connectWS();
+  </script>
+</body>
+</html>

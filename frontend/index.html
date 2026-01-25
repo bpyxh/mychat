@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>登录</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-2: #ffffff;
+      --card: #ffffffcc;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #4f8df7;
+      --primary-2: #3b82f6;
+      --danger: #ef4444;
+      --ring: #93c5fd55;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% 10%, #e0f2fe 0%, var(--bg) 40%),
+                  radial-gradient(1200px 600px at 90% 90%, #fce7f3 0%, var(--bg-2) 35%);
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+    .login {
+      width: min(520px, 100%);
+      background: var(--card);
+      backdrop-filter: saturate(140%) blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px #00000015, inset 0 1px 0 #ffffff90;
+      padding: 28px;
+    }
+    .tabs { display: flex; gap: 8px; margin: 8px 0 16px; }
+    .tab {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #ffffffee;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .tab[aria-selected="true"] { color: var(--text); border-color: var(--primary); box-shadow: 0 0 0 6px var(--ring); }
+    .hidden { display: none; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #22d3ee);
+      box-shadow: 0 0 12px #22d3ee88;
+    }
+    h1 {
+      margin: 6px 0 20px;
+      font-size: 22px;
+      letter-spacing: 0.2px;
+    }
+    .desc { color: var(--muted); margin-bottom: 18px; font-size: 14px; }
+    form { display: grid; gap: 14px; }
+    .field { display: grid; gap: 8px; }
+    label { font-size: 13px; color: var(--muted); }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffffee;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+    input::placeholder { color: #718096; }
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 6px var(--ring);
+      background: #ffffff;
+    }
+    .password-group { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+    #togglePwd {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #ffffffee;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    #togglePwd:hover { color: var(--text); border-color: #334155; }
+    #togglePwd:focus { outline: none; box-shadow: 0 0 0 6px var(--ring); }
+    .actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .remember { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .link { color: var(--primary); text-decoration: none; font-size: 13px; }
+    .link:hover { text-decoration: underline; }
+    .error { min-height: 20px; color: var(--danger); font-size: 13px; }
+    #submitBtn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: linear-gradient(180deg, var(--primary), var(--primary-2));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter .15s, transform .06s;
+    }
+    #submitBtn:hover { filter: brightness(1.1); }
+    #submitBtn:active { transform: translateY(1px); }
+    #submitBtn[disabled] { cursor: not-allowed; opacity: .65; }
+    #submitBtn[data-loading="true"] { position: relative; }
+    #submitBtn[data-loading="true"]::after {
+      content: "";
+      position: absolute;
+      inset: 50% auto auto 50%;
+      width: 16px; height: 16px;
+      margin: -8px 0 0 -8px;
+      border-radius: 50%;
+      border: 2px solid #ffffffcc;
+      border-top-color: transparent;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(1turn); } }
+    .footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 14px; }
+    @media (max-width: 420px) { .login { padding: 22px; } }
+  </style>
+</head>
+<body>
+  <section class="login" aria-label="登录窗口">
+    <div class="brand"><span class="brand-dot"></span><span>示例应用</span></div>
+    <h1>欢迎登录</h1>
+    <p class="desc">使用邮箱或用户名登录到您的账户</p>
+    <div class="tabs" role="tablist" aria-label="登录注册切换">
+      <button id="tabLogin" class="tab" role="tab" aria-selected="true" aria-controls="loginForm">登录</button>
+      <button id="tabRegister" class="tab" role="tab" aria-selected="false" aria-controls="registerForm">注册</button>
+    </div>
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="account">账号</label>
+        <input id="account" name="account" type="text" autocomplete="username" placeholder="邮箱或用户名" required>
+      </div>
+      <div class="field">
+        <label for="password">密码</label>
+        <div class="password-group">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="至少6位" minlength="6" required>
+          <button type="button" id="togglePwd" aria-controls="password" aria-pressed="false">显示</button>
+        </div>
+      </div>
+      <div class="actions">
+        <label class="remember"><input type="checkbox" id="remember"> 记住我</label>
+        <a class="link" href="#">忘记密码？</a>
+      </div>
+      <div id="error" class="error" role="alert" aria-live="polite"></div>
+      <button id="submitBtn" type="submit">登录</button>
+    </form>
+    <form id="registerForm" class="hidden" novalidate>
+      <div class="field">
+        <label for="reg_username">用户名</label>
+        <input id="reg_username" name="username" type="text" placeholder="用户名" required>
+      </div>
+      <div class="field">
+        <label for="reg_email">邮箱</label>
+        <input id="reg_email" name="email" type="email" placeholder="邮箱" required>
+      </div>
+      <div class="field">
+        <label for="reg_password">密码</label>
+        <input id="reg_password" name="password" type="password" placeholder="至少6位" minlength="6" required>
+      </div>
+      <div class="field">
+        <label for="reg_password2">确认密码</label>
+        <input id="reg_password2" name="password2" type="password" placeholder="再次输入密码" minlength="6" required>
+      </div>
+      <div class="field">
+        <label for="reg_name">昵称</label>
+        <input id="reg_name" name="name" type="text" placeholder="昵称（可选）">
+      </div>
+      <div id="regError" class="error" role="alert" aria-live="polite"></div>
+      <button id="regSubmitBtn" type="submit">注册</button>
+    </form>
+    <div class="footer">继续操作即表示同意服务条款</div>
+  </section>
+  <script>
+    const form = document.getElementById('loginForm');
+    const regForm = document.getElementById('registerForm');
+    const account = document.getElementById('account');
+    const password = document.getElementById('password');
+    const togglePwd = document.getElementById('togglePwd');
+    const errorBox = document.getElementById('error');
+    const submitBtn = document.getElementById('submitBtn');
+    const remember = document.getElementById('remember');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const regUsername = document.getElementById('reg_username');
+    const regEmail = document.getElementById('reg_email');
+    const regPassword = document.getElementById('reg_password');
+    const regPassword2 = document.getElementById('reg_password2');
+    const regName = document.getElementById('reg_name');
+    const regErrorBox = document.getElementById('regError');
+    const regSubmitBtn = document.getElementById('regSubmitBtn');
+
+    function setError(msg) { errorBox.textContent = msg || ''; }
+    function setRegError(msg) { regErrorBox.textContent = msg || ''; }
+    function validate() {
+      const a = account.value.trim();
+      const p = password.value;
+      let msg = '';
+      if (!a) msg = '请输入账号';
+      else if (p.length < 6) msg = '密码至少6位';
+      setError(msg);
+      submitBtn.disabled = !!msg;
+      return !msg;
+    }
+    function validateRegister() {
+      const u = regUsername.value.trim();
+      const e = regEmail.value.trim();
+      const p1 = regPassword.value;
+      const p2 = regPassword2.value;
+      let msg = '';
+      if (!u) msg = '请输入用户名';
+      else if (!e) msg = '请输入邮箱';
+      else if (p1.length < 6) msg = '密码至少6位';
+      else if (p2.length < 6) msg = '确认密码至少6位';
+      else if (p1 !== p2) msg = '两次密码不一致';
+      setRegError(msg);
+      regSubmitBtn.disabled = !!msg;
+      return !msg;
+    }
+    function setTab(tab) {
+      const isLogin = tab === 'login';
+      form.classList.toggle('hidden', !isLogin);
+      regForm.classList.toggle('hidden', isLogin);
+      tabLogin.setAttribute('aria-selected', isLogin.toString());
+      tabRegister.setAttribute('aria-selected', (!isLogin).toString());
+    }
+
+    function applyRememberFromStorage() {
+      const saved = localStorage.getItem('rememberAccount');
+      if (saved) account.value = saved;
+      validate();
+    }
+
+    account.addEventListener('input', validate);
+    password.addEventListener('input', validate);
+    regUsername.addEventListener('input', validateRegister);
+    regEmail.addEventListener('input', validateRegister);
+    regPassword.addEventListener('input', validateRegister);
+    regPassword2.addEventListener('input', validateRegister);
+    regName.addEventListener('input', validateRegister);
+    togglePwd.addEventListener('click', () => {
+      const isText = password.type === 'text';
+      password.type = isText ? 'password' : 'text';
+      togglePwd.setAttribute('aria-pressed', (!isText).toString());
+      togglePwd.textContent = isText ? '显示' : '隐藏';
+      password.focus({ preventScroll: true });
+    });
+    tabLogin.addEventListener('click', () => setTab('login'));
+    tabRegister.addEventListener('click', () => setTab('register'));
+    tabLogin.addEventListener('click', () => { setTab('login'); location.hash = 'login'; });
+    tabRegister.addEventListener('click', () => { setTab('register'); location.hash = 'register'; });
+    function initTabFromHash() {
+      const h = (location.hash || '').slice(1);
+      setTab(h === 'register' ? 'register' : 'login');
+    }
+    window.addEventListener('hashchange', initTabFromHash);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+      submitBtn.dataset.loading = 'true';
+      submitBtn.disabled = true;
+      setError('');
+      const a = account.value.trim();
+      const p = password.value;
+      if (remember.checked) localStorage.setItem('rememberAccount', a);
+      try {
+        const res = await fetch('http://localhost:8080/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: a, password: p })
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error((data && data.msg) || '登录失败');
+        }
+        if (!data || data.code !== 200) {
+          throw new Error((data && data.msg) || '登录失败');
+        }
+         const token = data.data && data.data.token;
+         const expire = data.data && data.data.expire;
+         const user = data.data && data.data.user;
+         if (token) localStorage.setItem('authToken', token);
+         if (expire) localStorage.setItem('authTokenExpire', expire);
+         if (user) localStorage.setItem('currentUser', JSON.stringify(user));
+        location.href = 'chat.html';
+      } catch (err) {
+        setError(err.message || '登录失败');
+      } finally {
+        submitBtn.dataset.loading = 'false';
+        submitBtn.disabled = false;
+      }
+    });
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validateRegister()) return;
+      regSubmitBtn.dataset.loading = 'true';
+      regSubmitBtn.disabled = true;
+      setRegError('');
+      const u = regUsername.value.trim();
+      const eaddr = regEmail.value.trim();
+      const p1 = regPassword.value;
+      const p2 = regPassword2.value;
+      const n = regName.value.trim();
+      try {
+        const res = await fetch('http://localhost:8080/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, email: eaddr, password: p1, password2: p2, name: n })
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error((data && data.msg) || '注册失败');
+        }
+        if (!data || data.code !== 200) {
+          throw new Error((data && data.msg) || '注册失败');
+        }
+        alert('注册成功，请登录');
+        account.value = u;
+        setTab('login');
+        validate();
+      } catch (err) {
+        setRegError(err.message || '注册失败');
+      } finally {
+        regSubmitBtn.dataset.loading = 'false';
+        regSubmitBtn.disabled = false;
+      }
+    });
+
+    applyRememberFromStorage();
+    validate();
+    validateRegister();
+    initTabFromHash();
+  </script>
+</body>
+</html>
