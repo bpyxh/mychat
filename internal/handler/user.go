@@ -36,7 +36,7 @@ func register(ctx *gin.Context) {
 		return
 	}
 
-	if req.UserName == "" || req.Password2 == "" || req.Password2 == "" {
+	if req.UserName == "" || req.Password == "" || req.Password2 == "" {
 		ctx.JSON(400, dto.Response{
 			Code: 100,
 			Msg:  "请求参数错误",

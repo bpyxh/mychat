@@ -1,0 +1,12 @@
+devMode = true
+
+[mysql]
+host = "localhost"
+port = "3306"
+user = "root"
+password = "root"
+dbName= "mychat"
+charset = "utf8mb4"
+maxIdle = 10
+maxConn = 2
+maxLifeTime = 10

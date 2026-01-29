@@ -2,25 +2,23 @@ package main
 
 import (
 	"fmt"
-	"mychat/internal/initialize"
+	"mychat/internal/db"
+	"mychat/internal/misc/config"
+	"mychat/internal/misc/logger"
 	"mychat/internal/router"
 )
 
 func main() {
-	initialize.InitLogger()
+	for range 3 {
+		fmt.Println("----------------------------------------------------------------")
+	}
 
-	// initialize.InitConfig()
+	config.Init()
 
-	user := "root"
-	password := "123456"
-	host := "127.0.0.1"
-	dbName := "mychat"
-	port := 3306
-	initialize.InitDB(user, password, host, dbName, port)
+	logger := logger.Init()
+	defer func() { _ = logger.Sync() }()
 
-	// dao.InitTestUser()
-
-	fmt.Println("server running...................................................")
+	db.Init()
 
 	router.Run()
 }
