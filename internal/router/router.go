@@ -56,10 +56,10 @@ func Run() {
 	apiGroup := router.Group("/api")
 	apiGroup.POST("/login", loginHandler)
 
-	apiGroup.Use()
 	{
 		apiGroup.GET("/refresh_token", authMiddleware.RefreshHandler)
 		handler.InitUserRouter(apiGroup, authMiddleware)
+		handler.InitWSRouter(apiGroup, authMiddleware)
 	}
 
 	// docs.SwaggerInfo.BasePath = "/"

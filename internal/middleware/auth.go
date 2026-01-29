@@ -20,13 +20,13 @@ var (
 	loginFailed = "loginFailed"
 )
 
-func GetContextUserId(ctx *gin.Context) (result uint32, err error) {
+func GetContextUserID(ctx *gin.Context) (result uint64, err error) {
 	if data, ok := ctx.Get(IdentityKey); ok {
 		if userData, ok := data.(map[string]any); ok {
 			if userId, ok := userData[UserID].(string); ok {
 				temp, err := strconv.Atoi(userId)
 				if err == nil {
-					result = uint32(temp)
+					result = uint64(temp)
 					return result, err
 				}
 			}

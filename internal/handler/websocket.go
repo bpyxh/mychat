@@ -3,10 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"mychat/internal/handler/dto"
+	"mychat/internal/middleware"
 	"net/http"
-	"strconv"
 	"time"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
@@ -234,34 +236,41 @@ func (c *Client) writePump() {
 	}
 }
 
-func Ws(ctx *gin.Context) {
-	w := ctx.Writer
-	r := ctx.Request
-	query := r.URL.Query()
-	id := query.Get("userId")
-	userId, err := strconv.ParseInt(id, 10, 64)
+func ws(ctx *gin.Context) {
+	userID, err := middleware.GetContextUserID(ctx)
 	if err != nil {
-		zap.S().Info("类型转换失败", err)
+		zap.S().Info(err)
+		ctx.JSON(500, dto.Response{
+			Code: 100,
+			Msg:  "内部错误",
+		})
 		return
 	}
 
-	// 升级 HTTP 连接到 WebSocket 协议
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		zap.S().Info(err)
+		zap.S().Error("upgrade ws error, %s", err)
+		ctx.JSON(500, dto.Response{
+			Code: 100,
+			Msg:  "内部错误",
+		})
 		return
 	}
 
 	client := &Client{
 		hub:    hub,
 		conn:   conn,
-		userId: userId,
+		userId: int64(userID), // TODO: 改成uint64
 		send:   make(chan []byte, 256),
 	}
 	client.hub.register <- client
 
-	fmt.Println("chat userId", userId)
+	zap.S().Infof("user %d connected ws", userID)
 
 	go client.writePump()
 	go client.readPump()
+}
+
+func InitWSRouter(g *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	g.GET("/ws", authMiddleware.MiddlewareFunc(), ws)
 }

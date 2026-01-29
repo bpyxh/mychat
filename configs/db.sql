@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS `mychat` CHARACTER SET utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `user` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL COMMENT '用户名',
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '姓名',
   `email` varchar(128) NOT NULL DEFAULT '',
