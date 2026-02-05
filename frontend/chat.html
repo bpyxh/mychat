@@ -249,9 +249,10 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     function connectWS() {
-      if (!myId) return;
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
       try {
-        ws = new WebSocket('ws://localhost:8080/api/ws?userId=' + encodeURIComponent(myId));
+        ws = new WebSocket('ws://localhost:8080/api/ws?token=' + encodeURIComponent(token));
         ws.onopen = () => { statusEl.textContent = '已连接'; };
         ws.onclose = () => { statusEl.textContent = '未连接'; };
         ws.onerror = () => { statusEl.textContent = '连接错误'; };

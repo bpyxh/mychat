@@ -33,32 +33,45 @@ var (
 // space   = []byte{' '}
 )
 
-type Hub struct {
-	clients    map[int64]*Client
-	broadcast  chan map[string]interface{}
+type UserInfo struct {
+	Name   string `json:"name"`
+	UserID uint64 `json:"user_id"`
+}
+
+type MsgCmd uint64
+
+const (
+	_ = iota
+	TextMsg
+	UserOnline
+	GroupMsg
+)
+
+type Msg struct {
+	Cmd      MsgCmd   `json:"cmd"`
+	FromID   uint64   `json:"from_id"`
+	ToID     uint64   `json:"to_Id"`
+	Text     string   `json:"text"`
+	UserInfo UserInfo `json:"user_info"`
+}
+
+type ClientManager struct {
+	clients    map[uint64]*Client
+	broadcast  chan *Msg
 	register   chan *Client
 	unregister chan *Client
 }
 
-func newHub() *Hub {
-	return &Hub{
-		broadcast:  make(chan map[string]interface{}, 1000),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[int64]*Client),
-	}
-}
-
-func (h *Hub) run() {
+func (h *ClientManager) run() {
 	for {
 		select {
 		case client := <-h.register:
-			uid := client.UserId()
-			zap.S().Infof("%d register", uid)
+			uid := client.UserID()
+			zap.S().Infof("%d online", uid)
 			h.clients[uid] = client
 		case client := <-h.unregister:
-			uid := client.UserId()
-			zap.S().Infof("%d ungisger", uid)
+			uid := client.UserID()
+			zap.S().Infof("%d offline", uid)
 			if _, ok := h.clients[uid]; ok {
 				delete(h.clients, uid)
 				close(client.send)
@@ -66,14 +79,8 @@ func (h *Hub) run() {
 
 			RemoveOnlineUser(uid)
 		case msg := <-h.broadcast:
-			toIdFloat, ok := msg["to_id"].(float64)
-			if !ok {
-				zap.S().Info("invalid msg, to_id")
-				return
-			}
-			toId := int64(toIdFloat)
 			// 广播类型消息
-			if toId == -1 {
+			if msg.ToID == 0 {
 				for _, client := range h.clients {
 					data, _ := json.Marshal(msg)
 					client.send <- data
@@ -81,25 +88,34 @@ func (h *Hub) run() {
 				continue
 			}
 
-			if _, ok := h.clients[toId]; ok {
+			if _, ok := h.clients[msg.ToID]; ok {
 				data, _ := json.Marshal(msg)
-				h.clients[toId].send <- data
+				h.clients[msg.ToID].send <- data
 			} else {
-				zap.S().Infof("Failed to find toId:%d client", toId)
+				zap.S().Infof("Failed to find toId:%d client", msg.ToID)
 			}
 		}
 	}
 }
 
-var hub *Hub
+var clientManager *ClientManager
 
-func init() {
-	hub = newHub()
-	go hub.run()
+func newClientManager() *ClientManager {
+	return &ClientManager{
+		broadcast:  make(chan *Msg, 1000),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		clients:    make(map[uint64]*Client),
+	}
 }
 
-func BroadMsg(msg map[string]interface{}) {
-	hub.broadcast <- msg
+func InitClientManager() {
+	clientManager = newClientManager()
+	go clientManager.run()
+}
+
+func BroadUserOnlineMsg(msg *Msg) {
+	clientManager.broadcast <- msg
 }
 
 // Upgrader 配置，重要：设置 CheckOrigin 防止 CSWSH
@@ -119,19 +135,19 @@ var upgrader = websocket.Upgrader{
 type Client struct {
 	conn *websocket.Conn //socket连接
 	// addr   string          //客户端地址
-	userId int64
-	send   chan []byte
-	hub    *Hub
+	userId        uint64
+	send          chan []byte
+	clientManager *ClientManager
 }
 
-func (c *Client) UserId() int64 {
+func (c *Client) UserID() uint64 {
 	return c.userId
 }
 
 // TODO: ping,pong 还没处理
 func (c *Client) readPump() {
 	defer func() {
-		c.hub.unregister <- c
+		c.clientManager.unregister <- c
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -151,7 +167,7 @@ func (c *Client) readPump() {
 		}
 		fmt.Println("recv msg: ", string(message))
 
-		msg := make(map[string]interface{})
+		msg := Msg{}
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
 			zap.S().Info("消息解析失败", err)
@@ -159,38 +175,29 @@ func (c *Client) readPump() {
 		}
 		// msg["self_id"] = node.userId
 
-		c.processMsg(msg)
+		c.processMsg(&msg)
 	}
 }
 
 // TODO: 检查发送人的id和node记录的id是否同一个人
-func (c *Client) processMsg(msg map[string]interface{}) {
+func (c *Client) processMsg(msg *Msg) {
 	fmt.Println("processMsg... ", msg)
 
-	cmdFloat, ok := msg["cmd"].(float64)
-	if !ok {
-		zap.S().Info("invalid msg, cmd")
-		return
-	}
+	switch msg.Cmd {
+	case TextMsg:
+		c.clientManager.broadcast <- msg
+	case UserOnline:
+		// resp := make(map[string]interface{})
+		// resp["cmd"] = 3
+		// resp["user_info"] = getOnlineUser()
+		// data, _ := json.Marshal(resp)
+		// c.send <- data
 
-	cmd := int64(cmdFloat)
-	zap.S().Info("cmd, ", cmd)
-
-	switch cmd {
-	case 1:
-		c.hub.broadcast <- msg
-	case 2:
-		resp := make(map[string]interface{})
-		resp["cmd"] = 3
-		resp["user_info"] = getOnlineUser()
-		data, _ := json.Marshal(resp)
-		c.send <- data
-
-	case 3:
+	case GroupMsg:
 		fmt.Println("还没实现群发。")
 
 	default:
-		fmt.Printf("unknownd cmd: %#v\n", cmd)
+		fmt.Printf("unknownd cmd: %#v\n", msg.Cmd)
 	}
 }
 
@@ -258,12 +265,12 @@ func ws(ctx *gin.Context) {
 	}
 
 	client := &Client{
-		hub:    hub,
-		conn:   conn,
-		userId: int64(userID), // TODO: 改成uint64
-		send:   make(chan []byte, 256),
+		clientManager: clientManager,
+		conn:          conn,
+		userId:        userID, // TODO: 改成uint64
+		send:          make(chan []byte, 256),
 	}
-	client.hub.register <- client
+	client.clientManager.register <- client
 
 	zap.S().Infof("user %d connected ws", userID)
 
