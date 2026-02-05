@@ -260,8 +260,8 @@
           let msg = null;
           try { msg = JSON.parse(evt.data); } catch { msg = null; }
           if (!msg) return;
-          if (msg.content) {
-            renderMessage({ text: msg.content, me: false, from: msg.from_name || '对方' });
+          if (msg.cmd === 1 && msg.text) {
+            renderMessage({ text: msg.text, me: false, from: msg.from_name || '对方' });
           }
         };
       } catch (_) {
@@ -269,25 +269,37 @@
       }
     }
     function sendMessage() {
+      console.log("on send msg")
+
       const text = (inputEl.value || '').trim();
       if (!text) return;
       inputEl.value = '';
       renderMessage({ text, me: true, from: '我' });
       const payload = JSON.stringify({
         cmd: 1,
-        to_id: -1,
-        content: text,
         from_id: myId || 0,
-        ts: Date.now()
+        to_Id: 3,
+        text: text,
+        user_info: user || {}
       });
       try {
         if (ws && ws.readyState === 1) {
+          console.log("on send msg to server")
           ws.send(payload);
         }
       } catch (_) {}
     }
-    sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+    sendBtn.onclick = () => {
+      console.log('Send button clicked');
+      sendMessage();
+    };
+    inputEl.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        console.log('Enter key pressed');
+        sendMessage();
+      }
+    };
+    console.log('Event listeners attached');
     connectWS();
   </script>
 </body>

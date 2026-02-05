@@ -41,7 +41,7 @@ type UserInfo struct {
 type MsgCmd uint64
 
 const (
-	_ = iota
+	_ MsgCmd = iota
 	TextMsg
 	UserOnline
 	GroupMsg
